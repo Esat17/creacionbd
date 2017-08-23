@@ -1,0 +1,132 @@
+
+CREATE RULE TipoInforme_rule AS @tipoinfocode IN ('Oficio', 'Formato');
+CREATE RULE TipoEncargado_rule AS @tipoencarcode IN ('DC', 'CEIIS', 'AC','CC','R','DO','PM');
+CREATE RULE TipoEvidencia_rule AS @tipoevidenciacode IN ('A', 'R');
+CREATE RULE TipoPlanActividad_rule AS @tipoplanactividadcode IN ('BM', 'AN');
+CREATE RULE TipoOpcion_rule AS @tipoopcioncode IN ('Consultar', 'Eliminar', 'Registrar','Modificar');
+CREATE RULE TipoPerfil_rule AS @tipoperfilcode IN ('DC', 'CEIIS','AC','R','DO','PM'); --dc->director de carrera, ac->acreditacion , cc->consejo de carrera, r->repositorio, do->docente, pm->plan mejoras
+CREATE RULE Estado_rule AS @estadocode IN ('A', 'R','NR');--a->aprobado, r->rechazado,nr->norevisado
+
+
+EXEC sp_addtype td_Idgeneral, 'nvarchar(10)',  null
+EXEC sp_addtype td_tipogeneral, 'nvarchar(50)', null
+EXEC sp_addtype td_nombres, 'nvarchar(100)', null
+EXEC sp_addtype td_contenidos, 'nvarchar(100)', null
+EXEC sp_addtype td_apellidos, 'nvarchar(100)', null
+EXEC sp_addtype td_direcciones, 'nvarchar(100)', null
+EXEC sp_addtype td_correos, 'nvarchar(100)', null
+EXEC sp_addtype td_descripciones, 'nvarchar(100)', null
+EXEC sp_addtype td_lugares, 'nvarchar(100)', null
+EXEC sp_addtype td_tiempos, 'int', null
+EXEC sp_addtype td_telefono, 'nvarchar(16)', null
+EXEC sp_addtype td_fecha, 'date', null
+EXEC sp_addtype td_estado, 'char(2)', null
+EXEC sp_addtype td_prueba, 'nvarchar(10)', null
+EXEC sp_addtype td_clave, 'varchar(50)', null
+EXEC sp_addtype td_plan, 'nvarchar(100)', null
+
+EXEC sp_bindrule TipoEncargado_rule, td_tipo;
+EXEC sp_bindrule TipoPlanActividad_rule, td_tipo;
+EXEC sp_bindrule TipoEvidencia_rule, td_tipo;
+EXEC sp_bindrule TipoInforme_rule, td_tipo;
+EXEC sp_bindrule TipoOpcion_rule, td_tipo;
+EXEC sp_bindrule TipoPerfil_rule, td_tipo;
+EXEC sp_bindrule estado_rule, td_estado;
+
+
+CREATE TABLE Informenes(
+Id_Informe td_Idgeneral ,
+Fecha td_fecha,
+Contenido td_contenidos,
+Tipo_Informe td_tipogeneral,
+PRIMARY KEY (Id_Informe),
+
+);
+GO
+
+CREATE TABLE Archivos(
+Id_Archivo td_Idgeneral,
+Nom_Archivo td_nombres,
+Descripcion td_descripciones,
+Estado td_estado,
+Fecha_Subida td_fecha,
+PRIMARY KEY (Id_Archivo),
+);
+GO
+
+CREATE TABLE Usuario(
+Id_Usuario td_Idgeneral,
+Nombre td_nombres,
+Apellido td_apellidos,
+Direccion td_direcciones,
+Correo td_correos,
+Telefonos td_telefono,
+Fecha_Naci td_fecha,
+PRIMARY KEY (Id_Usuario),
+);
+
+CREATE TABLE Evidencias(
+Id_Evidencias td_Idgeneral ,
+Nombre_Evidencia td_nombres,
+Fecha td_fecha,
+Prueba td_prueba ,
+Tipo_Evidencia td_tipogeneral,
+Fk_Id_Informe td_Idgeneral ,
+Fk_Id_Archivo td_Idgeneral,
+PRIMARY KEY (Id_Evidencias),
+FOREIGN KEY (Fk_Id_Informe) REFERENCES Informenes (Id_Informe),
+FOREIGN KEY (Fk_Id_Archivo) REFERENCES Archivos (Id_Archivo),
+);
+GO
+
+CREATE TABLE Encargado(
+Id_Encargado td_Idgeneral,
+Tipo_Encargado td_tipogeneral,
+Fk_Id_Evidencia td_Idgeneral,
+Fk_Id_Usuario td_Idgeneral,
+PRIMARY KEY (Id_Encargado),
+FOREIGN KEY (Fk_Id_Evidencia) REFERENCES Evidencia (Id_Evidencia),
+FOREIGN KEY (Fk_Id_Usuario) REFERENCES Usuario (Id_Usuario)
+);
+GO
+
+CREATE TABLE Actividades(
+Id_Actividades td_Idgeneral,
+Nombre_Actividad td_nombres,
+Fecha td_fecha,
+Tiempo td_tiempos ,
+Lugar td_lugar,
+Tipo_Plan_Actividad td_plan,
+Fk_Id_Evidencia td_Idgeneral,
+Fk_Id_Encargado td_Idgeneral,
+PRIMARY KEY (Id_Actividades),
+FOREIGN KEY (Fk_Id_Evidencia) REFERENCES Evidencia (Id_Evidencia),
+FOREIGN KEY (Fk_Id_Encargado) REFERENCES Encargado (Id_Encargado)
+)
+;
+GO
+
+CREATE TABLE Opciones(
+Id_Opciones td_Idgeneral,
+txtNom_Opcion td_nombres,
+txtDescripcion td_descripciones ,
+txtTipo_Opcion td_tipogeneral,
+Fk_Id_Archivo td_Idgeneral ,
+Fk_Id_Actividades td_Idgeneral,
+PRIMARY KEY (Id_Opciones),
+FOREIGN KEY (Fk_Id_Archivo) REFERENCES Archivos (Id_Archivo),
+FOREIGN KEY (Fk_Id_Actividades) REFERENCES Actividades (Id_Actividades)
+);
+GO
+
+CREATE TABLE Perfil(
+Id_Perfil td_Idgeneral,
+Nom_Perfil td_nombres,
+Clave td_clave,
+Tipo_Perfil td_tipogeneral,
+Descripcion td_descripciones,
+Fk_Id_Usuario td_Idgeneral,
+PRIMARY KEY (Id_Perfil),
+FOREIGN KEY (Fk_Id_Usuario) REFERENCES Usuario (Id_Usuario)
+);
+GO

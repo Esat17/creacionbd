@@ -1,0 +1,313 @@
+package bd;
+
+//import entidades.Usuario;
+import entidades.Evidencia;
+import entidades.Usuario;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.sql.*;
+import java.util.ArrayList;
+
+
+public class Conexion {
+    
+       private Connection con;
+       private static final String DRIVER = "com.mysql.jdbc.Driver";
+       private static final String DBMS = "mysql";
+       private static final String HOST = "127.0.0.1";
+       private static final String PORT = "3306";
+       private static final String DATABASE = "base_practica";
+       private static final String USER = "root";
+       private static final String PASSWORD = "";
+
+    void Conexion(){}
+    
+    /*METODO CONECTAR*/
+   
+    public void conectar ()throws Exception{
+        try {
+            Class.forName(DRIVER);
+        }catch(ClassNotFoundException ce){
+        }
+        
+            try{
+                this.con = DriverManager.getConnection("jdbc:" + DBMS + "://" + HOST + ":" + PORT + "/" + DATABASE, USER, PASSWORD);                
+                System.out.println("CONEXION EXITOSA CON LA BASE DE DATOS");
+            }catch(SQLException exception){
+                System.out.println("ERROR: NO SE PUDO CONECTAR CON LA BASE DE DATOS: "+exception);
+            }         
+    }
+    
+    public boolean desconectar()
+    {
+        try
+        {
+            this.con.close();
+            return(true);
+        }
+        catch(Exception e)
+        {
+            return(false);
+        }    
+    }
+    
+    
+        
+    
+      public boolean ingresarEvidencia(Evidencia p)
+    {
+        try
+        {
+                PreparedStatement st = null;
+                st = con.prepareStatement("INSERT INTO ESTABLECIMIENTO  VALUES(?,?,?,?) ");            
+                st.setString(1,p.getRuc());
+                st.setString(2,p.getRazonSocial());
+                st.setString(3,(p.getDireccion()));
+                st.setString(4,(p.getTelefono()));                
+                st.executeUpdate();
+                st.close();                        
+            return true;
+        }
+        catch(com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e){
+            System.out.println("ID DUPLICADO");
+            return false;
+        }
+        catch(Exception e1)
+        {
+            System.out.println(e1);
+            return false;
+        }        
+    }
+      
+    public boolean ingresarUsuario(Usuario p)
+    {
+        try
+        {
+                PreparedStatement st = null;
+                st = con.prepareStatement("INSERT INTO USUARIO (ID_USUARIO,CLAVE,ROL,ESTADO) VALUES(?,md5(?),?,?) ");            
+                st.setString(1,p.getId_usuario());
+                st.setString(2,p.getClave());
+                st.setString(3,Character.toString(p.getRol()));
+                st.setString(4,Character.toString(p.getEstado()));                
+                st.executeUpdate();
+                st.close();                        
+            return true;
+        }
+        catch(com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException e){
+            System.out.println("ID DUPLICADO");
+            return false;
+        }
+        catch(Exception e1)
+        {
+            System.out.println(e1);
+            return false;
+        }        
+    }
+        
+    public boolean editarEvidencia(Evidencia p)
+    {
+        try
+        {
+                PreparedStatement st = null;
+                st = con.prepareStatement("UPDATE ESTABLECIMIENTO SET RAZON_SOCIAL = ?, DIRECCION = ?, TELEFONO = ? WHERE RUC = ?");            
+                st.setString(1,p.getRazonSocial());
+                st.setString(2,p.getDireccion());
+                st.setString(3,p.getTelefono());
+                st.setString(4,p.getRuc());                
+                st.executeUpdate();
+                st.close();                        
+            return true;
+        }        
+        catch(Exception e)
+        {
+            System.out.println(e);
+            return false;
+        }        
+    } 
+    
+    
+    public boolean editarUsuario(Usuario p)
+    {
+        try
+        {
+                PreparedStatement st = null;
+                st = con.prepareStatement("UPDATE USUARIO SET CLAVE = md5(?), ESTADO = ?, ROL = ? WHERE ID_USUARIO = ?");            
+                st.setString(1,p.getClave());
+                st.setString(2,Character.toString(p.getEstado()));
+                st.setString(3,Character.toString(p.getRol()));
+                st.setString(4,p.getId_usuario());                
+                st.executeUpdate();
+                st.close();                        
+            return true;
+        }        
+        catch(Exception e)
+        {
+            System.out.println(e);
+            return false;
+        }        
+    }
+    
+    public boolean editarClaveUsuario(Usuario p)
+    {
+        try
+        {
+                PreparedStatement st = null;
+                st = con.prepareStatement("UPDATE USUARIO SET CLAVE = md5(?) WHERE ID = ?");            
+                st.setString(1,p.getClave());
+                st.setString(2,p.getId_usuario());                
+                st.executeUpdate();
+                st.close();                        
+            return true;
+        }        
+        catch(Exception e)
+        {
+            System.out.println(e);
+            return false;
+        }        
+    }
+    
+    
+    
+    public boolean eliminarEvidencia(String ruc)
+    {
+        try
+        {
+                PreparedStatement st = null;
+                st = con.prepareStatement("DELETE FROM establecimiento WHERE ruc IN ('"+ruc+"')");            
+                st.executeUpdate();
+                st.close();                        
+            return true;
+        }        
+        catch(Exception e)
+        {
+            System.out.println(e);
+            return false;
+        }        
+    }
+    
+    public boolean eliminarUsuario(String id_usuario)
+    {
+        try
+        {
+                PreparedStatement st = null;
+                st = con.prepareStatement("DELETE FROM usuario WHERE id_usuario IN ('"+id_usuario+"')");            
+                st.executeUpdate();
+                st.close();                        
+            return true;
+        }        
+        catch(Exception e)
+        {
+            System.out.println(e);
+            return false;
+        }        
+    }
+    
+    
+    public boolean usuarioValido2(Usuario u){
+      boolean resultado = false;
+      ResultSet rs = null;
+      PreparedStatement st = null;
+      try{
+        st = this.con.prepareStatement("SELECT id_usuario FROM usuario  "
+                + "WHERE id_usuario = ? ");
+        st.setString(1,u.getId_usuario());
+        st.setString(2,u.getId_usuario());
+        rs = st.executeQuery();        
+        if(rs.next()){
+            resultado = true;
+        }   
+        rs.close();
+        st.close();
+      }catch(Exception e){
+        System.out.println(e.toString());
+      }      
+      return resultado;    
+      
+    }
+    
+    public boolean usuarioValido(Usuario u){
+      boolean resultado = false;
+      ResultSet rs = null;
+      PreparedStatement st = null;
+      try{
+        st = this.con.prepareStatement("SELECT * FROM usuario "
+                + "WHERE id_usuario = ? AND clave = md5(?) "
+                + "AND estado = ?");
+        st.setString(1,u.getId_usuario());
+        st.setString(2,u.getClave());
+        st.setString(3,"A");  
+        rs = st.executeQuery();        
+        if(rs.next()){
+            resultado = true;
+        }   
+        rs.close();
+        st.close();
+      }catch(Exception e){
+        System.out.println(e.toString());
+      }      
+      return resultado;    
+    }
+    
+    public ArrayList<Evidencia> consultarEvidencia(String por, String descripcion){
+        ArrayList<Evidencia> resultado = new ArrayList<Evidencia>();
+        ResultSet rs = null;
+        PreparedStatement st = null;
+          try{
+            if(por.equals("TODOS")){  
+               st = this.con.prepareStatement("SELECT * FROM establecimiento;");
+               }else{                
+                String sql = "SELECT * FROM establecimiento WHERE "+por+" LIKE ?";               
+                st = this.con.prepareStatement(sql);
+                st.setString(1,"%"+descripcion+"%");
+            }                
+            rs = st.executeQuery();       
+            while(rs.next()){
+                String ruc = rs.getString("RUC");
+                String razonsocial = rs.getString("razon_social");
+                String direccion = rs.getString("Direccion");
+                String telefono = rs.getString("Telefono");                
+                Evidencia p = new Evidencia(ruc,razonsocial,direccion,telefono);
+                resultado.add(p);                    
+            }   
+            rs.close();
+            st.close();
+          }catch(Exception e){
+            System.out.println(e.toString());
+          }         
+        return resultado;
+    }
+    
+    public ArrayList<Usuario> consultarUsuario(String por, String descripcion){
+        ArrayList<Usuario> resultado = new ArrayList<Usuario>();
+        ResultSet rs = null;
+        PreparedStatement st = null;
+          try{
+            if(por.equals("TODOS")){  
+               st = this.con.prepareStatement("SELECT * FROM usuario;");               
+            }else{                
+                String sql = "SELECT * FROM usuario WHERE "+por+" LIKE ?";               
+                st = this.con.prepareStatement(sql);
+                st.setString(1,"%"+descripcion+"%");
+            }                
+            rs = st.executeQuery();       
+            while(rs.next()){
+                String id = rs.getString("id_usuario");
+                String clave = rs.getString("Clave");
+                char rol = rs.getString("Rol").charAt(0);
+                char estado = rs.getString("Estado").charAt(0);                
+                String fcreacion = rs.getString("FCreacion");
+                Usuario u = new Usuario(id, clave, rol, estado, fcreacion);
+                resultado.add(u);                    
+            }   
+            rs.close();
+            st.close();
+          }catch(Exception e){
+            System.out.println(e.toString());
+          }         
+        return resultado;
+    }
+    
+    
+    
+    
+}
