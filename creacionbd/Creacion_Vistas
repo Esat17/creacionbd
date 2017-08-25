@@ -1,0 +1,32 @@
+
+Use ProyectoBD;
+CREATE VIEW Listar_actividades as
+select * 
+from Actividades
+
+CREATE VIEW Listar_archivos as
+select * 
+from Archivos
+
+CREATE VIEW Listar_encargado as
+select * 
+from Encargado
+
+CREATE VIEW Listar_evidencia as
+select * 
+from Evidencias
+
+CREATE VIEW Listar_informenes as
+select * 
+from Informenes
+
+CREATE VIEW Listar_usuario as
+select * 
+from Usuario
+
+CREATE VIEW Listar_perfil as
+select * 
+from Perfil
+
+
+
