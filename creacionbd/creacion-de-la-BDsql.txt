@@ -1,4 +1,5 @@
 
+USE ProyectoBD;
 CREATE RULE TipoInforme_rule AS @tipoinfocode IN ('Oficio', 'Formato');
 CREATE RULE TipoEncargado_rule AS @tipoencarcode IN ('DC', 'CEIIS', 'AC','CC','R','DO','PM');
 CREATE RULE TipoEvidencia_rule AS @tipoevidenciacode IN ('A', 'R');
@@ -25,12 +26,12 @@ EXEC sp_addtype td_prueba, 'nvarchar(10)', null
 EXEC sp_addtype td_clave, 'varchar(50)', null
 EXEC sp_addtype td_plan, 'nvarchar(100)', null
 
-EXEC sp_bindrule TipoEncargado_rule, td_tipo;
-EXEC sp_bindrule TipoPlanActividad_rule, td_tipo;
-EXEC sp_bindrule TipoEvidencia_rule, td_tipo;
-EXEC sp_bindrule TipoInforme_rule, td_tipo;
-EXEC sp_bindrule TipoOpcion_rule, td_tipo;
-EXEC sp_bindrule TipoPerfil_rule, td_tipo;
+EXEC sp_bindrule TipoEncargado_rule, td_tipogeneral;
+EXEC sp_bindrule TipoPlanActividad_rule, td_tipogeneral;
+EXEC sp_bindrule TipoEvidencia_rule, td_tipogeneral;
+EXEC sp_bindrule TipoInforme_rule, td_tipogeneral;
+EXEC sp_bindrule TipoOpcion_rule, td_tipogeneral;
+EXEC sp_bindrule TipoPerfil_rule, td_tipogeneral;
 EXEC sp_bindrule estado_rule, td_estado;
 
 
@@ -40,7 +41,6 @@ Fecha td_fecha,
 Contenido td_contenidos,
 Tipo_Informe td_tipogeneral,
 PRIMARY KEY (Id_Informe),
-
 );
 GO
 
@@ -85,7 +85,7 @@ Tipo_Encargado td_tipogeneral,
 Fk_Id_Evidencia td_Idgeneral,
 Fk_Id_Usuario td_Idgeneral,
 PRIMARY KEY (Id_Encargado),
-FOREIGN KEY (Fk_Id_Evidencia) REFERENCES Evidencia (Id_Evidencia),
+FOREIGN KEY (Fk_Id_Evidencia) REFERENCES Evidencias (Id_Evidencias),
 FOREIGN KEY (Fk_Id_Usuario) REFERENCES Usuario (Id_Usuario)
 );
 GO
@@ -95,12 +95,12 @@ Id_Actividades td_Idgeneral,
 Nombre_Actividad td_nombres,
 Fecha td_fecha,
 Tiempo td_tiempos ,
-Lugar td_lugar,
+Lugar td_lugares,
 Tipo_Plan_Actividad td_plan,
 Fk_Id_Evidencia td_Idgeneral,
 Fk_Id_Encargado td_Idgeneral,
 PRIMARY KEY (Id_Actividades),
-FOREIGN KEY (Fk_Id_Evidencia) REFERENCES Evidencia (Id_Evidencia),
+FOREIGN KEY (Fk_Id_Evidencia) REFERENCES Evidencias (Id_Evidencias),
 FOREIGN KEY (Fk_Id_Encargado) REFERENCES Encargado (Id_Encargado)
 )
 ;
@@ -130,3 +130,4 @@ PRIMARY KEY (Id_Perfil),
 FOREIGN KEY (Fk_Id_Usuario) REFERENCES Usuario (Id_Usuario)
 );
 GO
+
