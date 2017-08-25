@@ -1,0 +1,170 @@
+use proyectobd;
+CREATE PROCEDURE OpUsuario
+@id_usuario nvarchar,
+@nombre nvarchar(100),
+@apellido nvarchar(100),
+@direccion nvarchar(100),
+@correo nvarchar(100),
+@telefono nvarchar(100),
+@fecha_naci date,
+@status varchar (50)
+AS
+BEGIN
+SET NOCOUNT ON;
+--- Insert New Records
+IF @status='INSERT'
+BEGIN
+INSERT INTO Usuario(Id_Usuario, Nombre, Apellido, Direccion, Correo, Telefonos, Fecha_Naci)
+ VALUES(@id_usuario,@nombre,@apellido,@direccion, @correo, @telefono, @fecha_naci)
+END
+--- Select Records in Table
+IF @status='SELECT-ID'
+BEGIN
+SELECT * FROM Listar_usuario where Id_Usuario=@id_usuario
+END
+IF @status='SELECT-NOMBRE'
+BEGIN
+SELECT * FROM Listar_usuario where Nombre=@nombre
+END
+IF @status='SELECT-APELLIDO'
+BEGIN
+SELECT * FROM Listar_usuario where Apellido=@apellido
+END
+IF @status='SELECT-DIRECCION'
+BEGIN
+SELECT * FROM Listar_usuario where Direccion=@direccion
+END
+IF @status='SELECT-CORREO'
+BEGIN
+SELECT * FROM Listar_usuario where Correo	=@correo
+END
+IF @status='SELECT-TELEFONO'
+BEGIN
+SELECT * FROM Listar_usuario where Telefonos=@telefono
+END
+IF @status='SELECT-FECHA_NACIMIENTO'
+BEGIN
+SELECT * FROM Listar_usuario where Fecha_Naci=@fecha_naci
+END
+IF @status='SELECT-TODO'
+BEGIN
+SELECT * FROM Listar_usuario 
+END
+--- Update Records in Table
+IF @status='UPDATE'
+BEGIN
+UPDATE Usuario SET  Nombre=@nombre, Apellido=@apellido, Direccion=@direccion, Correo=@correo, Telefonos=@telefono, Fecha_Naci=@fecha_naci
+ WHERE Id_Usuario=@id_usuario
+END
+--- Delete Records from Table
+IF @status='DELETE'
+BEGIN
+DELETE FROM Usuario where Id_Usuario=@id_usuario
+END
+SET NOCOUNT OFF
+END
+
+CREATE PROCEDURE OpPerfil
+@id_perfil nvarchar,
+@nombre_perfil nvarchar(100),
+@clave varchar(100),
+@Tipo_Perfil nvarchar(50),
+@descripcion nvarchar(100),
+@fk_id_usuario nvarchar(100),
+@status varchar (50)
+AS
+BEGIN
+SET NOCOUNT ON;
+--- Insert New Records
+IF @status='INSERT'
+BEGIN
+INSERT INTO Perfil(Id_Perfil, Nom_Perfil, Clave, Tipo_Perfil,Descripcion)
+ VALUES(@id_perfil,@nombre_perfil,@clave,@Tipo_Perfil, @descripcion)
+END
+--- Select Records in Table
+IF @status='SELECT-ID'
+BEGIN
+SELECT * FROM Listar_perfil where Id_Perfil=@id_perfil
+END
+IF @status='SELECT-NOMBRE'
+BEGIN
+SELECT * FROM Listar_perfil where Nom_Perfil=@nombre_perfil
+END
+IF @status='SELECT-TIPO_PERFIL'
+BEGIN
+SELECT * FROM Listar_perfil where Tipo_Perfil=@Tipo_Perfil
+END
+IF @status='SELECT-DESCRIPCION'
+BEGIN
+SELECT * FROM Listar_perfil where Descripcion=@descripcion
+END
+IF @status='SELECT-TODO'
+BEGIN
+SELECT * FROM Listar_perfil 
+END
+--- Update Records in Table
+IF @status='UPDATE'
+BEGIN
+UPDATE Perfil SET  Nom_Perfil=@nombre_perfil, Clave=@clave, Tipo_Perfil=@Tipo_Perfil, Descripcion=@descripcion
+WHERE Id_Perfil=@id_perfil
+END
+--- Delete Records from Table
+IF @status='DELETE'
+BEGIN
+DELETE FROM Perfil where Id_Perfil=@id_perfil
+END
+SET NOCOUNT OFF
+END
+
+CREATE PROCEDURE OpEvidencias
+@id_evidencias nvarchar,
+@nombre nvarchar(100),
+@fecha date,
+@prueba nvarchar(10),
+@tipo_evidencia nvarchar(50),
+@fk_id_informe nvarchar(10),
+@fk_id_archivo nvarchar(10),
+@status varchar (50)
+AS
+BEGIN
+SET NOCOUNT ON;
+--- Insert New Records
+IF @status='INSERT'
+BEGIN
+INSERT INTO Evidencias(Id_Evidencias, Nombre_Evidencia, Fecha, Prueba, Tipo_Evidencia)
+ VALUES(@id_evidencias,@nombre,@fecha,@prueba, @tipo_evidencia)
+END
+--- Select Records in Table
+IF @status='SELECT-ID'
+BEGIN
+SELECT * FROM Listar_evidencia where Id_Evidencias=@id_evidencias
+END
+IF @status='SELECT-NOMBRE'
+BEGIN
+SELECT * FROM Listar_evidencia where Nombre_Evidencia=@nombre
+END
+IF @status='SELECT-FECHA'
+BEGIN
+SELECT * FROM Listar_evidencia where Prueba=@prueba
+END
+IF @status='SELECT-TIPO_EVIDENCIA'
+BEGIN
+SELECT * FROM Listar_evidencia where Tipo_Evidencia=@tipo_evidencia
+END
+IF @status='SELECT-TODO'
+BEGIN
+SELECT * FROM Listar_evidencia 
+END
+--- Update Records in Table
+IF @status='UPDATE'
+BEGIN
+UPDATE Evidencias SET  Nombre_Evidencia=@nombre, Fecha=@fecha, Prueba=@prueba, Tipo_Evidencia=@tipo_evidencia
+WHERE Id_Evidencias=@id_evidencias
+END
+--- Delete Records from Table
+IF @status='DELETE'
+BEGIN
+DELETE FROM Evidencias where Id_Evidencias=@id_evidencias
+END
+SET NOCOUNT OFF
+END
